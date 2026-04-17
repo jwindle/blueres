@@ -1,43 +1,25 @@
 import { NodeOAuthClient, requestLocalLock } from '@atproto/oauth-client-node';
-import fs from 'node:fs';
-import path from 'node:path';
+import { Redis } from '@upstash/redis';
 
 const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
-// ─── Simple file-based state/session stores ──────────────────────────────────
-// Fine for a single-server or local deployment. For multi-instance production,
-// replace with a Redis or database-backed store.
+// ─── Upstash Redis stores ─────────────────────────────────────────────────────
 
-const DATA_DIR = path.join(process.cwd(), '.oauth-data');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-function fileStore(name: string) {
-  const file = path.join(DATA_DIR, `${name}.json`);
-
-  const read = (): Record<string, unknown> => {
-    try {
-      return JSON.parse(fs.readFileSync(file, 'utf-8'));
-    } catch {
-      return {};
-    }
-  };
-
-  const write = (data: Record<string, unknown>) =>
-    fs.writeFileSync(file, JSON.stringify(data, null, 2));
-
+function redisStore(prefix: string) {
   return {
     async get(key: string) {
-      return read()[key];
+      return redis.get(`${prefix}:${key}`);
     },
     async set(key: string, value: unknown) {
-      const data = read();
-      data[key] = value;
-      write(data);
+      await redis.set(`${prefix}:${key}`, value);
     },
     async del(key: string) {
-      const data = read();
-      delete data[key];
-      write(data);
+      await redis.del(`${prefix}:${key}`);
     },
   };
 }
@@ -58,8 +40,8 @@ export const oauthClient = new NodeOAuthClient({
     dpop_bound_access_tokens: true,
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  stateStore: fileStore('state') as any,
+  stateStore: redisStore('state') as any,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sessionStore: fileStore('session') as any,
+  sessionStore: redisStore('session') as any,
   requestLock: requestLocalLock,
 });

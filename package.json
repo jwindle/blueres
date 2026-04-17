@@ -12,6 +12,7 @@
     "@atproto/api": "^0.13.23",
     "@atproto/oauth-client-node": "^0.3.0",
     "@tailwindcss/postcss": "^4.2.2",
+    "@upstash/redis": "^1.37.0",
     "iron-session": "^8.0.4",
     "next": "^15.1.0",
     "react": "^19.0.0",
