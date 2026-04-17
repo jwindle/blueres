@@ -1,0 +1,21 @@
+{
+  "lexicon": 1,
+  "revision": 1,
+  "id": "org.blueres.resume.references",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A single reference.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "name": { "type": "string", "description": "e.g. Timothy Cook" },
+          "did": { "type": "string", "format": "did", "description": "Bluesky DID of the reference, if they have an account" },
+          "reference": { "type": "string", "description": "The reference text" }
+        }
+      }
+    }
+  }
+}

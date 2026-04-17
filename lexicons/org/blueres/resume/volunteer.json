@@ -1,0 +1,29 @@
+{
+  "lexicon": 1,
+  "revision": 1,
+  "id": "org.blueres.resume.volunteer",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A single volunteer experience entry.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "organization": { "type": "string", "description": "e.g. Red Cross" },
+          "did": { "type": "string", "format": "did", "description": "Bluesky DID of the organization, if they have an account" },
+          "position": { "type": "string", "description": "e.g. Coordinator" },
+          "url": { "type": "string", "format": "uri" },
+          "startDate": { "type": "string", "description": "ISO 8601 partial date" },
+          "endDate": { "type": "string", "description": "ISO 8601 partial date. Omit if ongoing." },
+          "summary": { "type": "string", "description": "Overview of responsibilities" },
+          "highlights": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

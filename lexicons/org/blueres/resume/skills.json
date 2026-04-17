@@ -1,0 +1,25 @@
+{
+  "lexicon": 1,
+  "revision": 1,
+  "id": "org.blueres.resume.skills",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A single skill or skill category.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "name": { "type": "string", "description": "e.g. Web Development" },
+          "level": { "type": "string", "description": "e.g. Master" },
+          "keywords": {
+            "type": "array",
+            "description": "Keywords pertaining to this skill",
+            "items": { "type": "string", "description": "e.g. HTML" }
+          }
+        }
+      }
+    }
+  }
+}

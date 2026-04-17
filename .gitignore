@@ -1,0 +1,17 @@
+# Next.js
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Local env files
+.env*.local
+
+# OAuth state/session data (file-based store)
+# Replace with Redis/DB for production multi-instance deployments
+.oauth-data/
+
+# Misc
+.DS_Store
+*.pem

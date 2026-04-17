@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  /* Semantic surface colors */
+  --color-canvas:        #f9fafb;  /* page background */
+  --color-surface:       #ffffff;  /* card / panel */
+  --color-raised:        #f3f4f6;  /* subtle raised bg, chips */
+
+  /* Semantic border colors */
+  --color-line:          #e5e7eb;  /* default borders */
+  --color-line-strong:   #d1d5db;  /* input / strong borders */
+
+  /* Semantic text colors */
+  --color-fg:            #111827;  /* primary text */
+  --color-fg-soft:       #4b5563;  /* secondary text */
+  --color-fg-muted:      #9ca3af;  /* muted / placeholder */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas:      #030712;
+    --color-surface:     #111827;
+    --color-raised:      #1f2937;
+
+    --color-line:        #374151;
+    --color-line-strong: #4b5563;
+
+    --color-fg:          #f9fafb;
+    --color-fg-soft:     #9ca3af;
+    --color-fg-muted:    #6b7280;
+  }
+}
+
+/* Give inputs the surface background so they adapt to dark mode */
+@layer base {
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),
+  textarea,
+  select {
+    background-color: var(--color-surface);
+    color: var(--color-fg);
+  }
+}
