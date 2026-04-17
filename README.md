@@ -2,6 +2,8 @@
 
 Store your résumé on your own [Bluesky](https://bsky.app) PDS using the AT Protocol.
 
+Try it out at [res.blueres.org](https://res.blueres.org).
+
 ## What it does
 
 BlueRes lets you own your résumé data the same way you own your Bluesky posts — stored on your Personal Data Server, portable, and under your control.
