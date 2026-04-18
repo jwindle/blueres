@@ -10,16 +10,18 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
+const REDIS_PREFIX = process.env.REDIS_PREFIX ?? 'blueres';
+
 function redisStore(prefix: string) {
   return {
     async get(key: string) {
-      return redis.get(`${prefix}:${key}`);
+      return redis.get(`${REDIS_PREFIX}:${prefix}:${key}`);
     },
     async set(key: string, value: unknown) {
-      await redis.set(`${prefix}:${key}`, value);
+      await redis.set(`${REDIS_PREFIX}:${prefix}:${key}`, value);
     },
     async del(key: string) {
-      await redis.del(`${prefix}:${key}`);
+      await redis.del(`${REDIS_PREFIX}:${prefix}:${key}`);
     },
   };
 }
