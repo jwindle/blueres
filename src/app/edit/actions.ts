@@ -1,75 +1,77 @@
 'use server';
 
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { getAgent } from '@/lib/atproto';
 import { getSession } from '@/lib/auth';
-import { NSID, BASICS_RKEY } from '@/lib/lexicons';
-import type { Basics, ResumeData } from '@/lib/types';
+import { NSID, LEGACY_NSIDS } from '@/lib/lexicons';
+import type { ResumeData } from '@/lib/types';
 
-// ─── Basics ────────────────────────────────────────────────────────────────
+// ─── Resume CRUD ────────────────────────────────────────────────────────────
 
-export async function saveBasics(data: Basics): Promise<void> {
+/**
+ * Creates or updates a resume record.
+ * Pass rkey=null to create a new record (returns the new rkey).
+ */
+export async function saveResume(rkey: string | null, data: ResumeData): Promise<string> {
   const session = await getSession();
   if (!session.did) throw new Error('Not authenticated');
   const agent = await getAgent();
   if (!agent) throw new Error('Not authenticated');
 
-  const record = { ...data };
-  if (record.location && Object.values(record.location).every(v => !v)) {
-    delete record.location;
+  const record = buildRecord(data);
+
+  if (rkey) {
+    await agent.com.atproto.repo.putRecord({
+      repo: session.did,
+      collection: NSID.RESUME,
+      rkey,
+      record: { $type: NSID.RESUME, ...record },
+    });
+    return rkey;
+  } else {
+    const { data: result } = await agent.com.atproto.repo.createRecord({
+      repo: session.did,
+      collection: NSID.RESUME,
+      record: { $type: NSID.RESUME, ...record },
+    });
+    return result.uri.split('/').pop()!;
   }
-  if (!record.profiles?.length) delete record.profiles;
-
-  await agent.com.atproto.repo.putRecord({
-    repo: session.did,
-    collection: NSID.BASICS,
-    rkey: BASICS_RKEY,
-    record: { $type: NSID.BASICS, ...record },
-  });
 }
 
-// ─── Collections ───────────────────────────────────────────────────────────
+/** Creates a new empty resume and redirects to its edit page. */
+export async function createResume(): Promise<never> {
+  const newRkey = await saveResume(null, {});
+  redirect(`/edit/${newRkey}`);
+}
 
-/** Creates a record and returns the new rkey. */
-export async function createCollectionRecord(
-  collection: string,
-  fields: Record<string, unknown>,
-): Promise<string> {
+export async function duplicateResume(rkey: string): Promise<never> {
   const session = await getSession();
   if (!session.did) throw new Error('Not authenticated');
   const agent = await getAgent();
   if (!agent) throw new Error('Not authenticated');
 
-  const { data } = await agent.com.atproto.repo.createRecord({
+  const { data } = await agent.com.atproto.repo.getRecord({
     repo: session.did,
-    collection,
-    record: { $type: collection, ...fields },
-  });
-
-  return data.uri.split('/').pop()!;
-}
-
-export async function updateCollectionRecord(
-  collection: string,
-  rkey: string,
-  fields: Record<string, unknown>,
-): Promise<void> {
-  const session = await getSession();
-  if (!session.did) throw new Error('Not authenticated');
-  const agent = await getAgent();
-  if (!agent) throw new Error('Not authenticated');
-
-  await agent.com.atproto.repo.putRecord({
-    repo: session.did,
-    collection,
+    collection: NSID.RESUME,
     rkey,
-    record: { $type: collection, ...fields },
   });
+
+  const original = data.value as ResumeData;
+  const copy: ResumeData = {
+    ...original,
+    $type: undefined,
+    meta: {
+      ...original.meta,
+      title: original.meta?.title ? `${original.meta.title} (copy)` : 'Copy',
+    },
+  };
+
+  const newRkey = await saveResume(null, copy);
+  redirect(`/edit/${newRkey}`);
 }
 
-export async function deleteCollectionRecord(
-  collection: string,
-  rkey: string,
-): Promise<void> {
+export async function deleteResume(rkey: string): Promise<void> {
   const session = await getSession();
   if (!session.did) throw new Error('Not authenticated');
   const agent = await getAgent();
@@ -77,21 +79,36 @@ export async function deleteCollectionRecord(
 
   await agent.com.atproto.repo.deleteRecord({
     repo: session.did,
-    collection,
+    collection: NSID.RESUME,
     rkey,
   });
+
+  revalidatePath('/edit');
 }
 
-// ─── Section replace (used by import) ──────────────────────────────────────
+// ─── Migration cleanup ───────────────────────────────────────────────────────
 
-/**
- * Deletes all existing records in a collection, creates the provided items,
- * and returns the new records with their server-assigned rkeys.
- */
-export async function replaceSection(
-  collection: string,
-  items: Record<string, unknown>[],
-): Promise<Array<{ rkey: string; value: Record<string, unknown> }>> {
+/** Returns true if the user still has records in any legacy per-section collection. */
+export async function hasLegacyData(): Promise<boolean> {
+  const session = await getSession();
+  if (!session.did) return false;
+  const agent = await getAgent();
+  if (!agent) return false;
+
+  try {
+    const { data } = await agent.com.atproto.repo.listRecords({
+      repo: session.did,
+      collection: NSID.BASICS,
+      limit: 1,
+    });
+    return data.records.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/** Deletes all records from all 12 legacy per-section collections. */
+export async function deleteAllLegacyData(): Promise<void> {
   const session = await getSession();
   if (!session.did) throw new Error('Not authenticated');
   const agent = await getAgent();
@@ -99,26 +116,55 @@ export async function replaceSection(
 
   const repo = session.did;
 
-  // Delete existing
-  try {
-    const { data: list } = await agent.com.atproto.repo.listRecords({ repo, collection, limit: 100 });
-    await Promise.all(
-      list.records.map(r =>
-        agent.com.atproto.repo.deleteRecord({ repo, collection, rkey: r.uri.split('/').pop()! }),
-      ),
-    );
-  } catch { /* collection not yet created */ }
+  await Promise.all(
+    LEGACY_NSIDS.map(async nsid => {
+      try {
+        const { data } = await agent.com.atproto.repo.listRecords({ repo, collection: nsid, limit: 100 });
+        await Promise.all(
+          data.records.map(r =>
+            agent.com.atproto.repo.deleteRecord({ repo, collection: nsid, rkey: r.uri.split('/').pop()! }),
+          ),
+        );
+      } catch { /* collection didn't exist */ }
+    }),
+  );
 
-  // Create new in reverse order so listRecords (newest-TID-first) returns them
-  // in the original order.
-  const created: Array<{ rkey: string; value: Record<string, unknown> }> = [];
-  for (const item of [...items].reverse()) {
-    const { data } = await agent.com.atproto.repo.createRecord({
-      repo,
-      collection,
-      record: { $type: collection, ...item },
-    });
-    created.push({ rkey: data.uri.split('/').pop()!, value: item });
+  revalidatePath('/edit');
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function buildRecord(data: ResumeData): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+
+  if (data.basics) {
+    const b = { ...data.basics };
+    delete b.$type;
+    if (b.location && Object.values(b.location).every(v => !v)) delete b.location;
+    if (!b.profiles?.length) delete b.profiles;
+    if (Object.values(b).some(v => v !== undefined)) out.basics = b;
   }
-  return created.reverse();
+
+  const collections = [
+    'work', 'volunteer', 'education', 'awards', 'certificates',
+    'publications', 'skills', 'languages', 'interests', 'references', 'projects',
+  ] as const;
+
+  for (const key of collections) {
+    const items = data[key];
+    if (items?.length) {
+      out[key] = items.map(item => {
+        const i = { ...(item as Record<string, unknown>) };
+        delete i.$type;
+        return i;
+      });
+    }
+  }
+
+  out.meta = {
+    ...(data.meta ?? {}),
+    lastModified: new Date().toISOString(),
+  };
+
+  return out;
 }

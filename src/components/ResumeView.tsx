@@ -3,10 +3,11 @@ import type { ResumeData, Work, Education, Volunteer, Award, Certificate, Public
 interface Props {
   resume: ResumeData;
   handle: string;
+  rkey: string;
   didHandles?: Map<string, string>;
 }
 
-export function ResumeView({ resume, handle, didHandles = new Map() }: Props) {
+export function ResumeView({ resume, handle, rkey, didHandles = new Map() }: Props) {
   const { basics } = resume;
 
   return (
@@ -24,7 +25,7 @@ export function ResumeView({ resume, handle, didHandles = new Map() }: Props) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline justify-between">
                   <h1 className="text-3xl font-bold">{basics.name ?? handle}</h1>
-                  <a href={`/json/${handle}`} className="text-xs text-fg-muted hover:text-blue-600" title="Export JSON Resume">JSON</a>
+                  <a href={`/json/${handle}/${rkey}`} className="text-xs text-fg-muted hover:text-blue-600" title="Export JSON Resume">JSON</a>
                 </div>
                 {basics.label && <p className="mt-1 text-lg text-fg-soft">{basics.label}</p>}
                 {basics.summary && <p className="mt-3 text-fg-soft leading-relaxed">{basics.summary}</p>}
@@ -63,21 +64,21 @@ export function ResumeView({ resume, handle, didHandles = new Map() }: Props) {
         )}
 
         {/* Work */}
-        {resume.work.length > 0 && (
+        {!!resume.work?.length && (
           <Section title="Work Experience">
             {resume.work.map((w, i) => <WorkEntry key={i} w={w} didHandles={didHandles} />)}
           </Section>
         )}
 
         {/* Education */}
-        {resume.education.length > 0 && (
+        {!!resume.education?.length && (
           <Section title="Education">
             {resume.education.map((e, i) => <EducationEntry key={i} e={e} didHandles={didHandles} />)}
           </Section>
         )}
 
         {/* Skills */}
-        {resume.skills.length > 0 && (
+        {!!resume.skills?.length && (
           <Section title="Skills">
             <div className="space-y-2">
               {resume.skills.map((s, i) => <SkillEntry key={i} s={s} />)}
@@ -86,42 +87,42 @@ export function ResumeView({ resume, handle, didHandles = new Map() }: Props) {
         )}
 
         {/* Projects */}
-        {resume.projects.length > 0 && (
+        {!!resume.projects?.length && (
           <Section title="Projects">
             {resume.projects.map((p, i) => <ProjectEntry key={i} p={p} didHandles={didHandles} />)}
           </Section>
         )}
 
         {/* Volunteer */}
-        {resume.volunteer.length > 0 && (
+        {!!resume.volunteer?.length && (
           <Section title="Volunteer">
             {resume.volunteer.map((v, i) => <VolunteerEntry key={i} v={v} didHandles={didHandles} />)}
           </Section>
         )}
 
         {/* Awards */}
-        {resume.awards.length > 0 && (
+        {!!resume.awards?.length && (
           <Section title="Awards">
             {resume.awards.map((a, i) => <AwardEntry key={i} a={a} />)}
           </Section>
         )}
 
         {/* Certificates */}
-        {resume.certificates.length > 0 && (
+        {!!resume.certificates?.length && (
           <Section title="Certificates">
             {resume.certificates.map((c, i) => <CertificateEntry key={i} c={c} />)}
           </Section>
         )}
 
         {/* Publications */}
-        {resume.publications.length > 0 && (
+        {!!resume.publications?.length && (
           <Section title="Publications">
             {resume.publications.map((p, i) => <PublicationEntry key={i} p={p} didHandles={didHandles} />)}
           </Section>
         )}
 
         {/* Languages */}
-        {resume.languages.length > 0 && (
+        {!!resume.languages?.length && (
           <Section title="Languages">
             <div className="flex flex-wrap gap-4">
               {resume.languages.map((l, i) => <LanguageEntry key={i} l={l} />)}
@@ -130,7 +131,7 @@ export function ResumeView({ resume, handle, didHandles = new Map() }: Props) {
         )}
 
         {/* Interests */}
-        {resume.interests.length > 0 && (
+        {!!resume.interests?.length && (
           <Section title="Interests">
             <div className="flex flex-wrap gap-4">
               {resume.interests.map((item, i) => <InterestEntry key={i} item={item} />)}
@@ -139,7 +140,7 @@ export function ResumeView({ resume, handle, didHandles = new Map() }: Props) {
         )}
 
         {/* References */}
-        {resume.references.length > 0 && (
+        {!!resume.references?.length && (
           <Section title="References">
             {resume.references.map((r, i) => <ReferenceEntry key={i} r={r} didHandles={didHandles} />)}
           </Section>

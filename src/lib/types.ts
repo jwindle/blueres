@@ -1,4 +1,4 @@
-// TypeScript types mirroring the org.blueres.resume.* lexicons.
+// TypeScript types mirroring the org.blueres.resume.resume lexicon.
 
 export interface Location {
   address?: string;
@@ -133,17 +133,31 @@ export interface Project {
   type?: string;
 }
 
+export interface Meta {
+  title?: string;
+  canonical?: string;
+  version?: string;
+  lastModified?: string;
+}
+
 export interface ResumeData {
-  basics: Basics | null;
-  work: Work[];
-  education: Education[];
-  volunteer: Volunteer[];
-  awards: Award[];
-  certificates: Certificate[];
-  publications: Publication[];
-  skills: Skill[];
-  languages: Language[];
-  interests: Interest[];
-  references: Reference[];
-  projects: Project[];
+  $type?: string;
+  basics?: Basics | null;
+  work?: Work[];
+  education?: Education[];
+  volunteer?: Volunteer[];
+  awards?: Award[];
+  certificates?: Certificate[];
+  publications?: Publication[];
+  skills?: Skill[];
+  languages?: Language[];
+  interests?: Interest[];
+  references?: Reference[];
+  projects?: Project[];
+  meta?: Meta;
+}
+
+export interface ResumeRecord {
+  rkey: string;
+  data: ResumeData;
 }

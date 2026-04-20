@@ -1,13 +1,9 @@
 import { Agent, AtpAgent } from '@atproto/api';
 import { getSession } from './auth';
 import { oauthClient } from './oauth';
-import { NSID, BASICS_RKEY } from './lexicons';
-import type { ResumeData, Basics, Work, Education, Volunteer, Award, Certificate, Publication, Skill, Language, Interest, Reference, Project } from './types';
+import { NSID } from './lexicons';
+import type { ResumeData, ResumeRecord } from './types';
 
-/**
- * Returns an authenticated Agent using the stored OAuth session.
- * Returns null if no valid session exists.
- */
 export async function getAgent(): Promise<Agent | null> {
   const session = await getSession();
   if (!session.did) return null;
@@ -20,10 +16,6 @@ export async function getAgent(): Promise<Agent | null> {
   }
 }
 
-/**
- * Resolve a Bluesky handle to a DID, then derive the PDS service URL
- * by reading the DID document from the PLC directory.
- */
 export async function resolvePdsUrl(handle: string): Promise<{ did: string; pdsUrl: string }> {
   const agent = new AtpAgent({ service: 'https://bsky.social' });
   const { data } = await agent.com.atproto.identity.resolveHandle({ handle });
@@ -57,9 +49,6 @@ async function getPdsFromDid(did: string): Promise<string> {
   }
 }
 
-/**
- * Resolve a DID to its current handle. Returns null on failure.
- */
 export async function resolveDidToHandle(did: string): Promise<string | null> {
   try {
     const res = await fetch(
@@ -74,59 +63,34 @@ export async function resolveDidToHandle(did: string): Promise<string | null> {
   }
 }
 
-/**
- * Fetch all resume sections for a given handle from their PDS.
- * Public read — no authentication required.
- */
-export async function fetchResumeData(handle: string): Promise<ResumeData> {
+export async function listResumes(handle: string): Promise<ResumeRecord[]> {
   const { did, pdsUrl } = await resolvePdsUrl(handle);
   const agent = new AtpAgent({ service: pdsUrl });
 
-  const [
-    basicsResult,
-    workResult,
-    educationResult,
-    volunteerResult,
-    awardsResult,
-    certificatesResult,
-    publicationsResult,
-    skillsResult,
-    languagesResult,
-    interestsResult,
-    referencesResult,
-    projectsResult,
-  ] = await Promise.allSettled([
-    agent.com.atproto.repo.getRecord({ repo: did, collection: NSID.BASICS, rkey: BASICS_RKEY }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.WORK,         limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.EDUCATION,    limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.VOLUNTEER,    limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.AWARDS,       limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.CERTIFICATES, limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.PUBLICATIONS, limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.SKILLS,       limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.LANGUAGES,    limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.INTERESTS,    limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.REFERENCES,   limit: 100 }),
-    agent.com.atproto.repo.listRecords({ repo: did, collection: NSID.PROJECTS,     limit: 100 }),
-  ]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function records<T>(result: PromiseSettledResult<any>): T[] {
-    return result.status === 'fulfilled' ? result.value.data.records.map((r: { value: unknown }) => r.value as T) : [];
+  try {
+    const { data } = await agent.com.atproto.repo.listRecords({
+      repo: did,
+      collection: NSID.RESUME,
+      limit: 100,
+    });
+    return data.records.map(r => ({
+      rkey: r.uri.split('/').pop()!,
+      data: r.value as ResumeData,
+    }));
+  } catch {
+    return [];
   }
+}
 
-  return {
-    basics:       basicsResult.status === 'fulfilled' ? (basicsResult.value.data.value as Basics) : null,
-    work:         records<Work>(workResult),
-    education:    records<Education>(educationResult),
-    volunteer:    records<Volunteer>(volunteerResult),
-    awards:       records<Award>(awardsResult),
-    certificates: records<Certificate>(certificatesResult),
-    publications: records<Publication>(publicationsResult),
-    skills:       records<Skill>(skillsResult),
-    languages:    records<Language>(languagesResult),
-    interests:    records<Interest>(interestsResult),
-    references:   records<Reference>(referencesResult),
-    projects:     records<Project>(projectsResult),
-  };
+export async function fetchResume(handle: string, rkey: string): Promise<ResumeData> {
+  const { did, pdsUrl } = await resolvePdsUrl(handle);
+  const agent = new AtpAgent({ service: pdsUrl });
+
+  const { data } = await agent.com.atproto.repo.getRecord({
+    repo: did,
+    collection: NSID.RESUME,
+    rkey,
+  });
+
+  return data.value as ResumeData;
 }

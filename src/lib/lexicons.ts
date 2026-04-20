@@ -1,6 +1,10 @@
-// NSID constants for all org.blueres.resume.* lexicons.
+// NSID constants for org.blueres.resume.* lexicons.
 
 export const NSID = {
+  // Unified resume record (new schema)
+  RESUME: 'org.blueres.resume.resume',
+
+  // Legacy per-section records (kept for migration cleanup only)
   BASICS:       'org.blueres.resume.basics',
   WORK:         'org.blueres.resume.work',
   EDUCATION:    'org.blueres.resume.education',
@@ -15,11 +19,9 @@ export const NSID = {
   PROJECTS:     'org.blueres.resume.projects',
 } as const;
 
-// The singleton rkey used for the basics record.
-export const BASICS_RKEY = 'self';
-
-// All collection NSIDs (non-singleton sections).
-export const COLLECTION_NSIDS = [
+// All legacy collection NSIDs, used only for the one-time cleanup action.
+export const LEGACY_NSIDS = [
+  NSID.BASICS,
   NSID.WORK,
   NSID.EDUCATION,
   NSID.VOLUNTEER,

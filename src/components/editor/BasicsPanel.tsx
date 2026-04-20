@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import type { Basics, Profile } from '@/lib/types';
-import { saveBasics } from '@/app/edit/actions';
 import { SectionPanel } from './SectionPanel';
 
 const inp = 'w-full rounded-lg border border-line-strong px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
@@ -15,13 +14,14 @@ const SENSITIVE_FIELDS = [
 ];
 
 interface Props {
-  serverData: Basics | null;
+  data: Basics | null;
+  onSave: (data: Basics) => Promise<void>;
   imported?: Basics;
   onClearImport?: () => void;
+  handle?: string;
 }
 
-export function BasicsPanel({ serverData, imported, onClearImport }: Props) {
-  // formKey forces the form to remount (resetting defaultValues) on import or refresh
+export function BasicsPanel({ data: serverData, onSave, imported, onClearImport }: Props) {
   const [formKey, setFormKey] = useState(0);
   const [defaults, setDefaults] = useState<Basics | null>(serverData);
   const [profiles, setProfiles] = useState<Profile[]>(serverData?.profiles ?? []);
@@ -30,7 +30,6 @@ export function BasicsPanel({ serverData, imported, onClearImport }: Props) {
 
   const isDirty = imported !== undefined;
 
-  // Apply imported data when it arrives
   useEffect(() => {
     if (imported !== undefined) {
       setDefaults(imported);
@@ -92,7 +91,7 @@ export function BasicsPanel({ serverData, imported, onClearImport }: Props) {
     setPending(null);
     setStatus('saving');
     try {
-      await saveBasics(data);
+      await onSave(data);
       onClearImport?.();
       setStatus('saved');
       setTimeout(() => setStatus('idle'), 2000);
@@ -112,7 +111,6 @@ export function BasicsPanel({ serverData, imported, onClearImport }: Props) {
   return (
     <SectionPanel title="Basics" isDirty={isDirty} onRefresh={refresh}>
 
-      {/* Sensitive-data confirmation */}
       {pending && (
         <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm">
           <p className="font-semibold text-amber-800 mb-1">Heads up — this data will be publicly visible</p>
@@ -181,16 +179,18 @@ export function BasicsPanel({ serverData, imported, onClearImport }: Props) {
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={status === 'saving' || !!pending}
-            className={`rounded-lg px-5 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-60
-              ${status === 'saved' ? 'bg-green-600' : status === 'error' ? 'bg-red-600' : 'bg-blue-600 hover:bg-blue-700'}`}
-          >
-            {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : status === 'error' ? 'Error — try again' : 'Save'}
-          </button>
-        </div>
+        {!isDirty && (
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={status === 'saving' || !!pending}
+              className={`rounded-lg px-5 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-60
+                ${status === 'saved' ? 'bg-green-600' : status === 'error' ? 'bg-red-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
+              {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : status === 'error' ? 'Error — try again' : 'Save'}
+            </button>
+          </div>
+        )}
       </form>
     </SectionPanel>
   );

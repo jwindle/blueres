@@ -1,0 +1,204 @@
+{
+  "lexicon": 1,
+  "revision": 1,
+  "id": "org.blueres.resume.resume",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A complete resume stored as a single document. Multiple records allowed per user.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "basics":       { "type": "ref", "ref": "#basics" },
+          "work":         { "type": "array", "items": { "type": "ref", "ref": "#work" } },
+          "volunteer":    { "type": "array", "items": { "type": "ref", "ref": "#volunteer" } },
+          "education":    { "type": "array", "items": { "type": "ref", "ref": "#education" } },
+          "awards":       { "type": "array", "items": { "type": "ref", "ref": "#award" } },
+          "certificates": { "type": "array", "items": { "type": "ref", "ref": "#certificate" } },
+          "publications": { "type": "array", "items": { "type": "ref", "ref": "#publication" } },
+          "skills":       { "type": "array", "items": { "type": "ref", "ref": "#skill" } },
+          "languages":    { "type": "array", "items": { "type": "ref", "ref": "#language" } },
+          "interests":    { "type": "array", "items": { "type": "ref", "ref": "#interest" } },
+          "references":   { "type": "array", "items": { "type": "ref", "ref": "#reference" } },
+          "projects":     { "type": "array", "items": { "type": "ref", "ref": "#project" } },
+          "meta":         { "type": "ref", "ref": "#meta" }
+        }
+      }
+    },
+    "basics": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":     { "type": "string" },
+        "label":    { "type": "string", "description": "e.g. Web Developer" },
+        "image":    { "type": "string", "format": "uri" },
+        "email":    { "type": "string" },
+        "phone":    { "type": "string" },
+        "url":      { "type": "string", "format": "uri" },
+        "summary":  { "type": "string" },
+        "location": { "type": "ref", "ref": "#location" },
+        "profiles": { "type": "array", "items": { "type": "ref", "ref": "#profile" } }
+      }
+    },
+    "location": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "address":     { "type": "string" },
+        "postalCode":  { "type": "string" },
+        "city":        { "type": "string" },
+        "countryCode": { "type": "string", "description": "ISO-3166-1 ALPHA-2, e.g. US, AU, IN" },
+        "region":      { "type": "string" }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "network":  { "type": "string" },
+        "username": { "type": "string" },
+        "url":      { "type": "string", "format": "uri" }
+      }
+    },
+    "work": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":        { "type": "string" },
+        "did":         { "type": "string", "description": "Bluesky DID of the company" },
+        "location":    { "type": "string" },
+        "description": { "type": "string" },
+        "position":    { "type": "string" },
+        "url":         { "type": "string", "format": "uri" },
+        "startDate":   { "type": "string" },
+        "endDate":     { "type": "string" },
+        "summary":     { "type": "string" },
+        "highlights":  { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "volunteer": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "organization": { "type": "string" },
+        "did":          { "type": "string", "description": "Bluesky DID of the organization" },
+        "position":     { "type": "string" },
+        "url":          { "type": "string", "format": "uri" },
+        "startDate":    { "type": "string" },
+        "endDate":      { "type": "string" },
+        "summary":      { "type": "string" },
+        "highlights":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "education": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "institution": { "type": "string" },
+        "did":         { "type": "string", "description": "Bluesky DID of the institution" },
+        "url":         { "type": "string", "format": "uri" },
+        "area":        { "type": "string" },
+        "studyType":   { "type": "string" },
+        "startDate":   { "type": "string" },
+        "endDate":     { "type": "string" },
+        "score":       { "type": "string" },
+        "courses":     { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "award": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "title":   { "type": "string" },
+        "date":    { "type": "string" },
+        "awarder": { "type": "string" },
+        "summary": { "type": "string" }
+      }
+    },
+    "certificate": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":   { "type": "string" },
+        "date":   { "type": "string" },
+        "url":    { "type": "string", "format": "uri" },
+        "issuer": { "type": "string" }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":        { "type": "string" },
+        "publisher":   { "type": "string" },
+        "did":         { "type": "string", "description": "Bluesky DID of the publisher" },
+        "releaseDate": { "type": "string" },
+        "url":         { "type": "string", "format": "uri" },
+        "summary":     { "type": "string" }
+      }
+    },
+    "skill": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":     { "type": "string" },
+        "level":    { "type": "string" },
+        "keywords": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "language": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "language": { "type": "string" },
+        "fluency":  { "type": "string" }
+      }
+    },
+    "interest": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":     { "type": "string" },
+        "keywords": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":      { "type": "string" },
+        "did":       { "type": "string", "description": "Bluesky DID of the reference" },
+        "reference": { "type": "string" }
+      }
+    },
+    "project": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name":        { "type": "string" },
+        "description": { "type": "string" },
+        "highlights":  { "type": "array", "items": { "type": "string" } },
+        "keywords":    { "type": "array", "items": { "type": "string" } },
+        "startDate":   { "type": "string" },
+        "endDate":     { "type": "string" },
+        "url":         { "type": "string", "format": "uri" },
+        "roles":       { "type": "array", "items": { "type": "string" } },
+        "entity":      { "type": "string" },
+        "did":         { "type": "string", "description": "Bluesky DID of the entity" },
+        "type":        { "type": "string" }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "title":        { "type": "string", "description": "User-friendly name for this resume, e.g. Software Engineer Resume" },
+        "canonical":    { "type": "string", "format": "uri" },
+        "version":      { "type": "string" },
+        "lastModified": { "type": "string" }
+      }
+    }
+  }
+}

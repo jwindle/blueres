@@ -1,5 +1,6 @@
-import { fetchResumeData, resolveDidToHandle } from '@/lib/atproto';
-import { ResumeView } from '@/components/ResumeView';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { listResumes } from '@/lib/atproto';
 import { HandleInput } from '@/components/HandleInput';
 
 interface Props {
@@ -11,12 +12,12 @@ export async function generateMetadata({ params }: Props) {
   return { title: `${handle} — BlueRes` };
 }
 
-export default async function ResumePage({ params }: Props) {
+export default async function ResumeListPage({ params }: Props) {
   const { handle } = await params;
 
-  let resume;
+  let resumes: Awaited<ReturnType<typeof listResumes>> = [];
   try {
-    resume = await fetchResumeData(handle);
+    resumes = await listResumes(handle);
   } catch {
     return (
       <main className="mx-auto max-w-3xl px-6 py-8">
@@ -28,35 +29,43 @@ export default async function ResumePage({ params }: Props) {
     );
   }
 
-  const hasAnyData = resume.basics || resume.work.length > 0 || resume.education.length > 0;
-  if (!hasAnyData) {
-    return (
-      <main className="mx-auto max-w-3xl px-6 py-8">
-        <div className="mb-6"><HandleInput defaultValue={handle} /></div>
-        <p className="text-sm text-fg-muted">No resume found for &ldquo;{handle}&rdquo;.</p>
-      </main>
-    );
+  // If exactly one resume, go straight to it
+  if (resumes.length === 1) {
+    redirect(`/resume/${handle}/${resumes[0].rkey}`);
   }
 
-  const didSet = new Set<string>();
-  const addDid = (v: unknown) => { if (typeof v === 'string' && v.startsWith('did:')) didSet.add(v); };
-  [...resume.work, ...resume.education, ...resume.volunteer,
-   ...resume.publications, ...resume.references, ...resume.projects]
-    .forEach(r => addDid((r as Record<string, unknown>).did));
-
-  const resolved = await Promise.all(
-    [...didSet].map(async did => [did, await resolveDidToHandle(did)] as const),
-  );
-  const didHandles = new Map(resolved.filter(([, h]) => h !== null) as [string, string][]);
-
   return (
-    <>
-      <div className="border-b border-line bg-canvas px-6 py-3">
-        <div className="mx-auto max-w-3xl">
-          <HandleInput defaultValue={handle} />
-        </div>
-      </div>
-      <ResumeView resume={resume} handle={handle} didHandles={didHandles} />
-    </>
+    <main className="mx-auto max-w-3xl px-6 py-8">
+      <div className="mb-6"><HandleInput defaultValue={handle} /></div>
+
+      {resumes.length === 0 && (
+        <p className="text-sm text-gray-500">No resumes found for &ldquo;{handle}&rdquo;.</p>
+      )}
+
+      {resumes.length > 1 && (
+        <>
+          <h1 className="text-2xl font-bold mb-4">{handle}&apos;s Resumes</h1>
+          <div className="space-y-3">
+            {resumes.map(({ rkey, data }) => (
+              <Link
+                key={rkey}
+                href={`/resume/${handle}/${rkey}`}
+                className="flex items-center justify-between rounded-xl border border-line bg-surface px-5 py-4 hover:bg-raised transition-colors"
+              >
+                <div>
+                  <p className="font-semibold">{data.meta?.title || 'Untitled Resume'}</p>
+                  {data.meta?.lastModified && (
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Updated {new Date(data.meta.lastModified).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+                <span className="text-sm text-blue-600">View →</span>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
+    </main>
   );
 }
