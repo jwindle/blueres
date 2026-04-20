@@ -69,6 +69,10 @@ export function ResumeEditor({ rkey, resume: initialResume, handle }: Props) {
     try {
       const next = { ...resume };
       if (importedData.basics !== undefined) next.basics = importedData.basics;
+      if (importedData.meta !== undefined) {
+        next.meta = { ...importedData.meta };
+        setTitle(importedData.meta.title ?? '');
+      }
       for (const key of COLLECTION_KEYS) {
         if (importedData[key] !== undefined) {
           (next as Record<string, unknown>)[key] = importedData[key];
@@ -163,6 +167,7 @@ export function ResumeEditor({ rkey, resume: initialResume, handle }: Props) {
 
 function buildSummary(data: Partial<ResumeData>): string {
   const parts: string[] = [];
+  if (data.meta?.title) parts.push(`title "${data.meta.title}"`);
   if (data.basics) parts.push('Basics');
   const labels: Record<string, string> = {
     work: 'work', education: 'education', volunteer: 'volunteer',

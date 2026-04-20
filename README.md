@@ -8,15 +8,20 @@ Try it out at [res.blueres.org](https://res.blueres.org).
 
 BlueRes lets you own your résumé data the same way you own your Bluesky posts — stored on your Personal Data Server, portable, and under your control.
 
-- **Edit** your résumé through a minimal web editor that writes records directly to your PDS via AT Protocol OAuth
-- **View** any BlueRes résumé at `/resume/[handle]`
-- **Export** as standard [JSON Résumé](https://jsonresume.org) format at `/json/[handle]`
+- **Edit** one or more résumés through a minimal web editor that writes records directly to your PDS via AT Protocol OAuth
+- **Duplicate** any résumé to create a variant (e.g. a tailored version for a specific role)
+- **Import** a [JSON Résumé](https://jsonresume.org) file to populate your résumé
+- **View** a résumé at `/resume/[handle]/[rkey]`, or `/resume/[handle]` to see all of a user's résumés
+- **Export** as JSON Résumé format at `/json/[handle]/[rkey]`, or `/json/[handle]` for the most recently created one
 
 ## Schema
 
-Résumé data is stored as a collection of AT Protocol lexicon records under the `org.blueres.resume.*` namespace, closely following the [JSON Résumé schema](https://jsonresume.org/schema) with one addition: fields like `did` on work, education, volunteer, publication, reference, and project records allow linking to the Bluesky accounts of employers, institutions, and collaborators.
+Each résumé is stored as a single `org.blueres.resume.resume` AT Protocol record, so one user can hold multiple résumés on their PDS. The record structure follows the [JSON Résumé schema](https://jsonresume.org/schema) with two additions:
 
-The full JSON Schema (compatible with JSON Résumé tooling) is in [`blueres-schema.json`](./blueres-schema.json).
+- A `did` field on work, education, volunteer, publication, reference, and project entries allows linking to the Bluesky accounts of employers, institutions, and collaborators
+- A `meta.title` field names the résumé (e.g. "Software Engineer Resume") for use when a user has more than one
+
+The full JSON Schema is in [`public/blueres-schema.json`](./public/blueres-schema.json). The AT Protocol lexicon is in [`lexicons/org/blueres/resume/resume.json`](./lexicons/org/blueres/resume/resume.json).
 
 ## Stack
 
