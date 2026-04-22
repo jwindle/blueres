@@ -1,33 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Agent } from '@atproto/api';
 import { oauthClient } from '@/lib/oauth';
 import { getSession } from '@/lib/auth';
 
-export async function GET(request: NextRequest) {
-  const params = new URLSearchParams(request.nextUrl.search);
+const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
-  let session;
+export async function GET(req: NextRequest) {
   try {
-    ({ session } = await oauthClient.callback(params));
+    const params = req.nextUrl.searchParams;
+    const { session } = await oauthClient.callback(params);
+
+    const ironSession = await getSession();
+    ironSession.did = session.did;
+
+    try {
+      const res = await fetch(
+        `https://bsky.social/xrpc/com.atproto.repo.describeRepo?repo=${encodeURIComponent(session.did)}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        ironSession.handle = data.handle as string;
+      }
+    } catch { /* handle resolution is best-effort */ }
+
+    await ironSession.save();
+
+    return NextResponse.redirect(new URL('/edit', APP_URL));
   } catch (err) {
     console.error('OAuth callback error:', err);
-    return NextResponse.redirect(new URL('/sign-in?error=oauth_failed', request.url));
+    return NextResponse.redirect(new URL('/sign-in?error=oauth_failed', APP_URL));
   }
-
-  // Resolve the DID to a handle.
-  let handle: string = session.did;
-  try {
-    const agent = new Agent(session);
-    const { data } = await agent.com.atproto.repo.describeRepo({ repo: session.did });
-    handle = data.handle as string;
-  } catch {
-    // Not fatal — we just won't have a pretty handle.
-  }
-
-  const ironSession = await getSession();
-  ironSession.did = session.did;
-  ironSession.handle = handle;
-  await ironSession.save();
-
-  return NextResponse.redirect(new URL('/edit', request.url));
 }
