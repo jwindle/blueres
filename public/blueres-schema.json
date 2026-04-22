@@ -510,6 +510,10 @@
       "description": "The schema version and any other tooling configuration lives here",
       "additionalProperties": true,
       "properties": {
+        "title": {
+          "type": "string",
+          "description": "User-friendly name for this resume, e.g. Software Engineer Resume"
+        },
         "canonical": {
           "type": "string",
           "description": "URL (as per RFC 3986) to latest version of this document",
