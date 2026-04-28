@@ -12,6 +12,9 @@ node_modules/
 # Replace with Redis/DB for production multi-instance deployments
 .oauth-data/
 
+# TypeScript
+*.tsbuildinfo
+
 # Misc
 .DS_Store
 *.pem
