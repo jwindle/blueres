@@ -10,7 +10,7 @@ export function HandleInput({ defaultValue = '' }: { defaultValue?: string }) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const h = value.trim();
-    if (h) router.push(`/resume/${encodeURIComponent(h)}`);
+    if (h) router.push(`/resumes/${encodeURIComponent(h)}`);
   }
 
   return (

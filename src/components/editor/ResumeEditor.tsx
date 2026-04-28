@@ -49,6 +49,13 @@ export function ResumeEditor({ rkey, resume: initialResume, handle }: Props) {
     await persist(next);
   }
 
+  async function handleActiveChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const meta: Meta = { ...resume.meta, active: e.target.checked || undefined };
+    const next = { ...resume, meta };
+    setResume(next);
+    await persist(next);
+  }
+
   function clearSection(slug: string) {
     if (!importedData) return;
     const next = { ...importedData };
@@ -108,6 +115,15 @@ export function ResumeEditor({ rkey, resume: initialResume, handle }: Props) {
         <p className="mt-1 text-xs text-gray-400">
           Used to distinguish this resume from others. Not shown on the public view.
         </p>
+        <label className="mt-3 flex items-center gap-2 text-sm cursor-pointer">
+          <input
+            type="checkbox"
+            checked={resume.meta?.active ?? false}
+            onChange={handleActiveChange}
+            className="h-4 w-4 rounded border-line-strong"
+          />
+          Active (publicly visible)
+        </label>
       </div>
 
       <ImportPanel onImport={setImportedData} />

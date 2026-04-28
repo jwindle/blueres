@@ -63,7 +63,7 @@ export async function resolveDidToHandle(did: string): Promise<string | null> {
   }
 }
 
-export async function listResumes(handle: string): Promise<ResumeRecord[]> {
+export async function listResumes(handle: string): Promise<{ records: ResumeRecord[]; did: string }> {
   const { did, pdsUrl } = await resolvePdsUrl(handle);
   const agent = new AtpAgent({ service: pdsUrl });
 
@@ -73,12 +73,15 @@ export async function listResumes(handle: string): Promise<ResumeRecord[]> {
       collection: NSID.RESUME,
       limit: 100,
     });
-    return data.records.map(r => ({
-      rkey: r.uri.split('/').pop()!,
-      data: r.value as ResumeData,
-    }));
+    return {
+      records: data.records.map(r => ({
+        rkey: r.uri.split('/').pop()!,
+        data: r.value as ResumeData,
+      })),
+      did,
+    };
   } catch {
-    return [];
+    return { records: [], did };
   }
 }
 

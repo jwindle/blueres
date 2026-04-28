@@ -2,31 +2,31 @@
 
 @theme {
   /* Semantic surface colors */
-  --color-canvas:        #f9fafb;  /* page background */
-  --color-surface:       #ffffff;  /* card / panel */
-  --color-raised:        #f3f4f6;  /* subtle raised bg, chips */
+  --color-canvas:        #ffffff;  /* page background */
+  --color-surface:       #f5f5f5;  /* card / panel */
+  --color-raised:        #ebebeb;  /* subtle raised bg, chips */
 
   /* Semantic border colors */
-  --color-line:          #e5e7eb;  /* default borders */
+  --color-line:          #e2e2e2;  /* default borders */
   --color-line-strong:   #d1d5db;  /* input / strong borders */
 
   /* Semantic text colors */
-  --color-fg:            #111827;  /* primary text */
+  --color-fg:            #111111;  /* primary text */
   --color-fg-soft:       #4b5563;  /* secondary text */
   --color-fg-muted:      #9ca3af;  /* muted / placeholder */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-canvas:      #030712;
-    --color-surface:     #111827;
-    --color-raised:      #1f2937;
+    --color-canvas:      #0f0f0f;
+    --color-surface:     #1a1a1a;
+    --color-raised:      #252525;
 
-    --color-line:        #374151;
-    --color-line-strong: #4b5563;
+    --color-line:        #2e2e2e;
+    --color-line-strong: #3a3a3a;
 
-    --color-fg:          #f9fafb;
-    --color-fg-soft:     #9ca3af;
+    --color-fg:          #f0f0f0;
+    --color-fg-soft:     #999999;
     --color-fg-muted:    #6b7280;
   }
 }

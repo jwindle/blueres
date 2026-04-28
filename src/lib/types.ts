@@ -138,6 +138,7 @@ export interface Meta {
   canonical?: string;
   version?: string;
   lastModified?: string;
+  active?: boolean;
 }
 
 export interface ResumeData {

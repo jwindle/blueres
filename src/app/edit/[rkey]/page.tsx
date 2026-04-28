@@ -33,7 +33,7 @@ export default async function EditResumePage({ params }: Props) {
     <main className="mx-auto max-w-3xl px-4 py-10">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <Link href="/edit" className="text-sm text-gray-400 hover:text-gray-700">
+          <Link href={`/resumes/${encodeURIComponent(session.handle!)}`} className="text-sm text-gray-400 hover:text-gray-700">
             ← All resumes
           </Link>
           <h1 className="text-2xl font-bold mt-1">
@@ -42,8 +42,7 @@ export default async function EditResumePage({ params }: Props) {
           <p className="text-sm text-gray-500">Stored on your Bluesky PDS</p>
         </div>
         <Link
-          href={`/resume/${session.handle}/${rkey}`}
-          target="_blank"
+          href={`/resumes/${session.handle}/${rkey}`}
           className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium hover:bg-gray-100"
         >
           Preview

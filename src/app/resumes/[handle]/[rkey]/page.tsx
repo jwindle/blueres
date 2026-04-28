@@ -1,6 +1,7 @@
-import { fetchResume, resolveDidToHandle } from '@/lib/atproto';
+import { notFound } from 'next/navigation';
+import { fetchResume, resolveDidToHandle, resolvePdsUrl } from '@/lib/atproto';
+import { getSession } from '@/lib/auth';
 import { ResumeView } from '@/components/ResumeView';
-import { HandleInput } from '@/components/HandleInput';
 
 interface Props {
   params: Promise<{ handle: string; rkey: string }>;
@@ -15,28 +16,21 @@ export default async function ResumePage({ params }: Props) {
   const { handle, rkey } = await params;
 
   let resume;
+  let did = '';
   try {
-    resume = await fetchResume(handle, rkey);
+    [resume, { did }] = await Promise.all([
+      fetchResume(handle, rkey),
+      resolvePdsUrl(handle),
+    ]);
   } catch {
-    return (
-      <main className="mx-auto max-w-3xl px-6 py-8">
-        <div className="mb-6"><HandleInput defaultValue={handle} /></div>
-        <p className="text-sm text-red-600">
-          Couldn&apos;t load this resume. The record may not exist.
-        </p>
-      </main>
-    );
+    notFound();
   }
 
+  const session = await getSession();
+  const isOwner = !!session.did && session.did === did;
+
   const hasAnyData = resume.basics || !!resume.work?.length || !!resume.education?.length;
-  if (!hasAnyData) {
-    return (
-      <main className="mx-auto max-w-3xl px-6 py-8">
-        <div className="mb-6"><HandleInput defaultValue={handle} /></div>
-        <p className="text-sm text-gray-500">This resume has no content yet.</p>
-      </main>
-    );
-  }
+  if (!hasAnyData) notFound();
 
   // Resolve all DIDs mentioned in the resume to handles for display
   const didSet = new Set<string>();
@@ -50,14 +44,5 @@ export default async function ResumePage({ params }: Props) {
   );
   const didHandles = new Map(resolved.filter(([, h]) => h !== null) as [string, string][]);
 
-  return (
-    <>
-      <div className="border-b border-line bg-canvas px-6 py-3">
-        <div className="mx-auto max-w-3xl">
-          <HandleInput defaultValue={handle} />
-        </div>
-      </div>
-      <ResumeView resume={resume} handle={handle} rkey={rkey} didHandles={didHandles} />
-    </>
-  );
+  return <ResumeView resume={resume} handle={handle} rkey={rkey} isOwner={isOwner} didHandles={didHandles} />;
 }

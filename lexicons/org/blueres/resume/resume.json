@@ -197,7 +197,8 @@
         "title":        { "type": "string", "description": "User-friendly name for this resume, e.g. Software Engineer Resume" },
         "canonical":    { "type": "string", "format": "uri" },
         "version":      { "type": "string" },
-        "lastModified": { "type": "string" }
+        "lastModified": { "type": "string" },
+        "active":       { "type": "boolean", "description": "Whether the user intends this resume to be visible. Absence or false means inactive." }
       }
     }
   }

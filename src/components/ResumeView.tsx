@@ -4,10 +4,11 @@ interface Props {
   resume: ResumeData;
   handle: string;
   rkey: string;
+  isOwner?: boolean;
   didHandles?: Map<string, string>;
 }
 
-export function ResumeView({ resume, handle, rkey, didHandles = new Map() }: Props) {
+export function ResumeView({ resume, handle, rkey, isOwner = false, didHandles = new Map() }: Props) {
   const { basics } = resume;
 
   return (
@@ -25,7 +26,12 @@ export function ResumeView({ resume, handle, rkey, didHandles = new Map() }: Pro
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline justify-between">
                   <h1 className="text-3xl font-bold">{basics.name ?? handle}</h1>
-                  <a href={`/json/${handle}/${rkey}`} className="text-xs text-fg-muted hover:text-blue-600" title="Export JSON Resume">JSON</a>
+                  <div className="flex items-center gap-3">
+                    {isOwner && (
+                      <a href={`/edit/${rkey}`} className="text-xs text-fg-muted hover:text-blue-600 px-2 py-0.5 rounded border border-line">Edit</a>
+                    )}
+                    <a href={`/json/${handle}/${rkey}`} className="text-xs text-fg-muted hover:text-blue-600" title="Export JSON Resume">JSON</a>
+                  </div>
                 </div>
                 {basics.label && <p className="mt-1 text-lg text-fg-soft">{basics.label}</p>}
                 {basics.summary && <p className="mt-3 text-fg-soft leading-relaxed">{basics.summary}</p>}

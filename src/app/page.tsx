@@ -6,8 +6,8 @@ export default async function LandingPage() {
   const session = await getSession();
 
   return (
-    <main className="flex flex-1 items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+    <main className="p-4">
+      <div className="w-full max-w-sm mx-auto mt-16">
         <h1 className="mb-1 text-3xl font-bold tracking-tight">BlueRes</h1>
         <p className="mb-8 text-fg-muted">View any resume stored on the AT Protocol.</p>
         <HandleInput />

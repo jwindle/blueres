@@ -83,7 +83,7 @@ export async function deleteResume(rkey: string): Promise<void> {
     rkey,
   });
 
-  revalidatePath('/edit');
+  revalidatePath(`/resumes/${session.handle}`);
 }
 
 // ─── Migration cleanup ───────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ export async function deleteAllLegacyData(): Promise<void> {
     }),
   );
 
-  revalidatePath('/edit');
+  revalidatePath(`/resumes/${session.handle}`);
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
