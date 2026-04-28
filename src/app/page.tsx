@@ -4,19 +4,21 @@ import Link from 'next/link';
 
 export default async function LandingPage() {
   const session = await getSession();
+  const placeholder = session.handle ?? session.did ?? 'windle.bsky.social';
 
   return (
     <main className="p-4">
-      <div className="w-full max-w-sm mx-auto mt-16">
-        <h1 className="mb-1 text-3xl font-bold tracking-tight">BlueRes</h1>
-        <p className="mb-8 text-fg-muted">View any resume stored on the AT Protocol.</p>
-        <HandleInput />
+      <div className="max-w-sm mx-auto mt-16 flex flex-col gap-6">
+        <h1 className="text-2xl font-bold">
+          Browse Résumés
+        </h1>
+        <HandleInput placeholder={placeholder} />
         {!session.did && (
-          <p className="mt-6 text-center text-sm text-fg-muted">
-            or{' '}
-            <Link href="/sign-in" className="underline hover:text-fg">
-              log in to edit your profile
-            </Link>
+          <p className="text-sm text-fg-muted">
+            <Link href="/sign-in" className="text-blue-600 hover:underline">
+              Log in
+            </Link>{' '}
+            to edit your profile.
           </p>
         )}
       </div>

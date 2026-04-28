@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { oauthClient } from '@/lib/oauth';
+import Link from 'next/link';
 
 export default async function SignInPage({
   searchParams,
@@ -28,26 +29,23 @@ export default async function SignInPage({
   };
 
   return (
-    <main className="flex flex-1 items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <h1 className="mb-1 text-2xl font-bold tracking-tight">Sign in with Bluesky</h1>
-        <p className="mb-8 text-fg-muted">Enter your handle to connect your account.</p>
+    <main className="p-4">
+      <div className="max-w-sm mx-auto mt-16 flex flex-col gap-6">
+        <h1 className="text-2xl font-bold">Log in to BlueRes</h1>
+        <p className="text-fg-muted">
+          Create and manage your resume stored on the AT Protocol.
+        </p>
 
-        <form action={initiateAuth} className="space-y-4">
-          <div>
-            <label htmlFor="handle" className="block text-sm font-medium mb-1">
-              Bluesky handle
-            </label>
-            <input
-              id="handle"
-              name="handle"
-              type="text"
-              required
-              autoComplete="username"
-              placeholder="you.bsky.social"
-              className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <form action={initiateAuth} className="flex flex-col gap-3">
+          <input
+            id="handle"
+            name="handle"
+            type="text"
+            required
+            autoComplete="username"
+            placeholder="your.bsky.handle"
+            className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-surface"
+          />
 
           {error && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
@@ -59,9 +57,15 @@ export default async function SignInPage({
             type="submit"
             className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Sign in
+            Log in with Bluesky
           </button>
         </form>
+
+        <p className="text-sm text-center">
+          <Link href="/" className="text-blue-600 hover:underline">
+            Browse résumés without logging in →
+          </Link>
+        </p>
       </div>
     </main>
   );

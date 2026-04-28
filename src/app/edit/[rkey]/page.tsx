@@ -34,12 +34,11 @@ export default async function EditResumePage({ params }: Props) {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <Link href={`/resumes/${encodeURIComponent(session.handle!)}`} className="text-sm text-gray-400 hover:text-gray-700">
-            ← All resumes
+            ← All résumés
           </Link>
           <h1 className="text-2xl font-bold mt-1">
             {resume.meta?.title || 'Untitled Resume'}
           </h1>
-          <p className="text-sm text-gray-500">Stored on your Bluesky PDS</p>
         </div>
         <Link
           href={`/resumes/${session.handle}/${rkey}`}
