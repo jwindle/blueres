@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Basics, Profile } from '@/lib/types';
+import type { Basics, Media, Profile } from '@/lib/types';
 import { SectionPanel } from './SectionPanel';
+import { MediaListInput } from './MediaInput';
 
 const inp = 'w-full rounded-lg border border-line-strong px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
 const lbl = 'block text-sm font-medium mb-1';
@@ -53,6 +54,10 @@ export function BasicsPanel({ data: serverData, onSave, imported, onClearImport 
 
   function collectData(fd: FormData): Basics {
     const get = (k: string) => (fd.get(k) as string)?.trim() || undefined;
+    const mediaRaws = fd.getAll('media') as string[];
+    const media = mediaRaws
+      .map(r => { try { return JSON.parse(r.trim()) as Media; } catch { return null; } })
+      .filter((m): m is Media => m !== null);
     return {
       name:    get('name'),
       label:   get('label'),
@@ -69,6 +74,7 @@ export function BasicsPanel({ data: serverData, onSave, imported, onClearImport 
         region:      get('loc.region'),
       },
       profiles: profiles.filter(p => p.network || p.username || p.url),
+      media: media.length ? media : undefined,
     };
   }
 
@@ -177,6 +183,11 @@ export function BasicsPanel({ data: serverData, onSave, imported, onClearImport 
               </div>
             ))}
           </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-400 mb-2">Media</p>
+          <MediaListInput defaultValue={defaults?.media} inputClass={inp} />
         </div>
 
         {!isDirty && (

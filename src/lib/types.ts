@@ -1,5 +1,22 @@
 // TypeScript types mirroring the org.blueres.resume.resume lexicon.
 
+export interface MediaUrl {
+  $type: 'org.blueres.resume.resume#mediaUrl';
+  url?: string;
+  mediaType?: 'image' | 'video';
+  title?: string;
+  caption?: string;
+}
+
+export interface MediaAtUri {
+  $type: 'org.blueres.resume.resume#mediaAtUri';
+  atUri?: string;
+  title?: string;
+  caption?: string;
+}
+
+export type Media = MediaUrl | MediaAtUri;
+
 export interface Location {
   address?: string;
   postalCode?: string;
@@ -25,6 +42,7 @@ export interface Basics {
   summary?: string;
   location?: Location;
   profiles?: Profile[];
+  media?: Media[];
 }
 
 export interface Work {
@@ -39,6 +57,7 @@ export interface Work {
   endDate?: string;
   summary?: string;
   highlights?: string[];
+  media?: Media[];
 }
 
 export interface Education {
@@ -52,6 +71,7 @@ export interface Education {
   endDate?: string;
   score?: string;
   courses?: string[];
+  media?: Media[];
 }
 
 export interface Volunteer {
@@ -64,6 +84,7 @@ export interface Volunteer {
   endDate?: string;
   summary?: string;
   highlights?: string[];
+  media?: Media[];
 }
 
 export interface Award {
@@ -90,6 +111,7 @@ export interface Publication {
   releaseDate?: string;
   url?: string;
   summary?: string;
+  media?: Media[];
 }
 
 export interface Skill {
@@ -131,6 +153,7 @@ export interface Project {
   roles?: string[];
   entity?: string;
   type?: string;
+  media?: Media[];
 }
 
 export interface Meta {

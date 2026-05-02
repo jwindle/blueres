@@ -1,6 +1,6 @@
 import { NSID } from './lexicons';
 
-export type FieldType = 'text' | 'textarea' | 'url' | 'email' | 'date-partial' | 'array-lines' | 'did';
+export type FieldType = 'text' | 'textarea' | 'url' | 'email' | 'date-partial' | 'array-lines' | 'did' | 'media';
 
 export interface Field {
   key: string;
@@ -42,6 +42,7 @@ export const SECTIONS: SectionConfig[] = [
       { key: 'summary',     label: 'Summary',              type: 'textarea',     placeholder: 'Overview of your responsibilities', rows: 3 },
       { key: 'highlights',  label: 'Highlights',           type: 'array-lines',  description: "Start each highlight with '- ' on a new line", rows: 4 },
       { key: 'did',         label: 'Bluesky Account',      type: 'did',          placeholder: '@company.bsky.social' },
+      { key: 'media',       label: 'Media',                type: 'media' },
     ],
   },
   {
@@ -61,6 +62,7 @@ export const SECTIONS: SectionConfig[] = [
       { key: 'score',       label: 'Score / GPA',   type: 'text',       placeholder: 'e.g. 3.67/4.0' },
       { key: 'courses',     label: 'Notable Courses', type: 'array-lines', description: "Start each course with '- ' on a new line", rows: 4 },
       { key: 'did',         label: 'Bluesky Account', type: 'did',         placeholder: '@university.edu' },
+      { key: 'media',       label: 'Media',           type: 'media' },
     ],
   },
   {
@@ -79,6 +81,7 @@ export const SECTIONS: SectionConfig[] = [
       { key: 'summary',      label: 'Summary',      type: 'textarea',     rows: 3 },
       { key: 'highlights',   label: 'Highlights',   type: 'array-lines',  description: "Start each highlight with '- ' on a new line", rows: 4 },
       { key: 'did',          label: 'Bluesky Account', type: 'did',        placeholder: '@org.bsky.social' },
+      { key: 'media',        label: 'Media',           type: 'media' },
     ],
   },
   {
@@ -123,6 +126,7 @@ export const SECTIONS: SectionConfig[] = [
       { key: 'url',         label: 'URL',         type: 'url',          placeholder: 'https://' },
       { key: 'summary',     label: 'Summary',     type: 'textarea',     rows: 3 },
       { key: 'did',         label: 'Bluesky Account', type: 'did',      placeholder: '@publisher.bsky.social' },
+      { key: 'media',       label: 'Media',           type: 'media' },
     ],
   },
   {
@@ -192,6 +196,7 @@ export const SECTIONS: SectionConfig[] = [
       { key: 'highlights',  label: 'Highlights',    type: 'array-lines',  description: "Start each highlight with '- ' on a new line", rows: 3 },
       { key: 'keywords',    label: 'Keywords',      type: 'array-lines',  description: "Start each keyword with '- ' on a new line", rows: 3 },
       { key: 'did',         label: 'Bluesky Account', type: 'did',        placeholder: '@entity.bsky.social' },
+      { key: 'media',       label: 'Media',           type: 'media' },
     ],
   },
 ];

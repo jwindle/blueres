@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { SectionConfig, Field } from '@/lib/sections';
+import type { Media } from '@/lib/types';
+import { MediaListInput } from './MediaInput';
 
 interface Props {
   section: SectionConfig;
@@ -76,9 +78,17 @@ function FieldInput({
   inputClass: string;
 }) {
   const labelClass = 'block text-sm font-medium mb-1';
-  const isWide = field.type === 'textarea' || field.type === 'array-lines' || field.type === 'did';
+  const isWide = field.type === 'textarea' || field.type === 'array-lines' || field.type === 'did' || field.type === 'media';
 
   const input = (() => {
+    if (field.type === 'media') {
+      return (
+        <div>
+          <label className={labelClass}>{field.label}</label>
+          <MediaListInput defaultValue={defaultValue as Media[] | undefined} inputClass={inputClass} />
+        </div>
+      );
+    }
     if (field.type === 'did') {
       return (
         <div>
@@ -199,6 +209,14 @@ function DidInput({
 function buildFields(fields: Field[], fd: FormData): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const f of fields) {
+    if (f.type === 'media') {
+      const raws = fd.getAll('media') as string[];
+      const medias = raws
+        .map(r => { try { return JSON.parse(r.trim()); } catch { return null; } })
+        .filter(Boolean);
+      if (medias.length) result['media'] = medias;
+      continue;
+    }
     const raw = fd.get(f.key) as string | null;
     if (!raw?.trim()) continue;
     if (f.type === 'array-lines') {

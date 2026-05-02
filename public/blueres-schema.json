@@ -6,6 +6,27 @@
   "type": "object",
   "additionalProperties": true,
   "definitions": {
+    "mediaUrl": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "$type": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "mediaType": { "type": "string", "description": "image or video" },
+        "title": { "type": "string" },
+        "caption": { "type": "string" }
+      }
+    },
+    "mediaAtUri": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "$type": { "type": "string" },
+        "atUri": { "type": "string", "description": "AT Protocol URI, e.g. at://did:plc:abc/app.bsky.feed.post/xyz" },
+        "title": { "type": "string" },
+        "caption": { "type": "string" }
+      }
+    },
     "iso8601": {
       "type": "string",
       "description": "Similar to the standard date type, but each section after the year is optional. e.g. 2014-06-29 or 2023-04",
@@ -78,6 +99,16 @@
               "type": "string",
               "description": "The general region where you live. Can be a US state, or a province, for instance."
             }
+          }
+        },
+        "media": {
+          "type": "array",
+          "description": "A single image or video to associate with this section",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/mediaUrl" },
+              { "$ref": "#/definitions/mediaAtUri" }
+            ]
           }
         },
         "profiles": {
@@ -156,6 +187,16 @@
               "type": "string",
               "description": "e.g. Increased profits by 20% from 2011-2012 through viral advertising"
             }
+          },
+          "media": {
+            "type": "array",
+            "description": "A single image or video to associate with this work experience",
+            "items": {
+              "oneOf": [
+                { "$ref": "#/definitions/mediaUrl" },
+                { "$ref": "#/definitions/mediaAtUri" }
+              ]
+            }
           }
         }
       }
@@ -201,6 +242,16 @@
             "items": {
               "type": "string",
               "description": "e.g. Increased profits by 20% from 2011-2012 through viral advertising"
+            }
+          },
+          "media": {
+            "type": "array",
+            "description": "A single image or video to associate with this volunteer experience",
+            "items": {
+              "oneOf": [
+                { "$ref": "#/definitions/mediaUrl" },
+                { "$ref": "#/definitions/mediaAtUri" }
+              ]
             }
           }
         }
@@ -251,6 +302,16 @@
             "items": {
               "type": "string",
               "description": "e.g. H1302 - Introduction to American history"
+            }
+          },
+          "media": {
+            "type": "array",
+            "description": "A single image or video to associate with this education entry",
+            "items": {
+              "oneOf": [
+                { "$ref": "#/definitions/mediaUrl" },
+                { "$ref": "#/definitions/mediaAtUri" }
+              ]
             }
           }
         }
@@ -340,6 +401,16 @@
           "summary": {
             "type": "string",
             "description": "Short summary of publication. e.g. Discussion of the World Wide Web, HTTP, HTML."
+          },
+          "media": {
+            "type": "array",
+            "description": "A single image or video to associate with this publication",
+            "items": {
+              "oneOf": [
+                { "$ref": "#/definitions/mediaUrl" },
+                { "$ref": "#/definitions/mediaAtUri" }
+              ]
+            }
           }
         }
       }
@@ -501,6 +572,16 @@
           "type": {
             "type": "string",
             "description": " e.g. 'volunteering', 'presentation', 'talk', 'application', 'conference'"
+          },
+          "media": {
+            "type": "array",
+            "description": "A single image or video to associate with this project",
+            "items": {
+              "oneOf": [
+                { "$ref": "#/definitions/mediaUrl" },
+                { "$ref": "#/definitions/mediaAtUri" }
+              ]
+            }
           }
         }
       }

@@ -27,6 +27,25 @@
         }
       }
     },
+    "mediaUrl": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "url":       { "type": "string", "format": "uri" },
+        "mediaType": { "type": "string", "description": "image or video" },
+        "title":     { "type": "string" },
+        "caption":   { "type": "string" }
+      }
+    },
+    "mediaAtUri": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "atUri":   { "type": "string", "description": "AT Protocol URI, e.g. at://did:plc:abc/app.bsky.feed.post/xyz" },
+        "title":   { "type": "string" },
+        "caption": { "type": "string" }
+      }
+    },
     "basics": {
       "type": "object",
       "required": [],
@@ -39,7 +58,8 @@
         "url":      { "type": "string", "format": "uri" },
         "summary":  { "type": "string" },
         "location": { "type": "ref", "ref": "#location" },
-        "profiles": { "type": "array", "items": { "type": "ref", "ref": "#profile" } }
+        "profiles": { "type": "array", "items": { "type": "ref", "ref": "#profile" } },
+        "media":    { "type": "array", "items": { "type": "union", "refs": ["#mediaUrl", "#mediaAtUri"] } }
       }
     },
     "location": {
@@ -75,7 +95,8 @@
         "startDate":   { "type": "string" },
         "endDate":     { "type": "string" },
         "summary":     { "type": "string" },
-        "highlights":  { "type": "array", "items": { "type": "string" } }
+        "highlights":  { "type": "array", "items": { "type": "string" } },
+        "media":       { "type": "array", "items": { "type": "union", "refs": ["#mediaUrl", "#mediaAtUri"] } }
       }
     },
     "volunteer": {
@@ -89,7 +110,8 @@
         "startDate":    { "type": "string" },
         "endDate":      { "type": "string" },
         "summary":      { "type": "string" },
-        "highlights":   { "type": "array", "items": { "type": "string" } }
+        "highlights":   { "type": "array", "items": { "type": "string" } },
+        "media":        { "type": "array", "items": { "type": "union", "refs": ["#mediaUrl", "#mediaAtUri"] } }
       }
     },
     "education": {
@@ -104,7 +126,8 @@
         "startDate":   { "type": "string" },
         "endDate":     { "type": "string" },
         "score":       { "type": "string" },
-        "courses":     { "type": "array", "items": { "type": "string" } }
+        "courses":     { "type": "array", "items": { "type": "string" } },
+        "media":       { "type": "array", "items": { "type": "union", "refs": ["#mediaUrl", "#mediaAtUri"] } }
       }
     },
     "award": {
@@ -136,7 +159,8 @@
         "did":         { "type": "string", "description": "Bluesky DID of the publisher" },
         "releaseDate": { "type": "string" },
         "url":         { "type": "string", "format": "uri" },
-        "summary":     { "type": "string" }
+        "summary":     { "type": "string" },
+        "media":       { "type": "array", "items": { "type": "union", "refs": ["#mediaUrl", "#mediaAtUri"] } }
       }
     },
     "skill": {
@@ -187,7 +211,8 @@
         "roles":       { "type": "array", "items": { "type": "string" } },
         "entity":      { "type": "string" },
         "did":         { "type": "string", "description": "Bluesky DID of the entity" },
-        "type":        { "type": "string" }
+        "type":        { "type": "string" },
+        "media":       { "type": "array", "items": { "type": "union", "refs": ["#mediaUrl", "#mediaAtUri"] } }
       }
     },
     "meta": {

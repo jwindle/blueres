@@ -1,4 +1,5 @@
 import type { ResumeData, Work, Education, Volunteer, Award, Certificate, Publication, Skill, Language, Interest, Reference, Project } from '@/lib/types';
+import { MediaCarousel } from '@/components/MediaCarousel';
 
 interface Props {
   resume: ResumeData;
@@ -64,6 +65,7 @@ export function ResumeView({ resume, handle, rkey, isOwner = false, didHandles =
                     ))}
                   </div>
                 )}
+                <MediaCarousel items={basics.media ?? []} />
               </div>
             </div>
           </header>
@@ -222,6 +224,7 @@ function WorkEntry({ w, didHandles }: { w: Work; didHandles: DH }) {
           {w.highlights.map((h, i) => <li key={i}>{h}</li>)}
         </ul>
       )}
+      <MediaCarousel items={w.media ?? []} />
     </div>
   );
 }
@@ -247,6 +250,7 @@ function EducationEntry({ e, didHandles }: { e: Education; didHandles: DH }) {
           {e.courses.map((c, i) => <li key={i}>{c}</li>)}
         </ul>
       )}
+      <MediaCarousel items={e.media ?? []} />
     </div>
   );
 }
@@ -277,6 +281,7 @@ function VolunteerEntry({ v, didHandles }: { v: Volunteer; didHandles: DH }) {
           {v.highlights.map((h, i) => <li key={i}>{h}</li>)}
         </ul>
       )}
+      <MediaCarousel items={v.media ?? []} />
     </div>
   );
 }
@@ -328,6 +333,7 @@ function PublicationEntry({ p, didHandles }: { p: Publication; didHandles: DH })
       </div>
       <BlueskyLink did={p.did} didHandles={didHandles} />
       {p.summary && <p className="mt-1 text-sm text-fg-soft">{p.summary}</p>}
+      <MediaCarousel items={p.media ?? []} />
     </div>
   );
 }
@@ -414,6 +420,7 @@ function ProjectEntry({ p, didHandles }: { p: Project; didHandles: DH }) {
           ))}
         </div>
       )}
+      <MediaCarousel items={p.media ?? []} />
     </div>
   );
 }
